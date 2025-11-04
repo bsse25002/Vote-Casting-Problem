@@ -3,18 +3,106 @@
 #include <string>
 using namespace std;
 
+void arrBuilder(string society, string arr[], int arrVotes[], int num) {
+    cout << "Making Candidates List for " << society << endl;
+
+    if(num <= 0 || num >= 100) {
+        cout << "Number of Candidates Out of Range!" << endl;
+        return;
+    }
+
+    cout << "1. Enter the names of candidates for " << society << " Society!" << endl;
+
+    for(int i = 0;i < num;i++) {
+        string name;
+        cin >> name;
+        arr[i] = name;
+        arrVotes[i] = 0;
+        
+        if(i != num-1) {
+            cout << "Next Candidate!" << endl;
+        }
+    }
+}
+
+void arrExtender(string society, string arr[], int arrVotes[], int num, int extra) {
+    cout << "Making Candidates List for " << society << endl;
+
+    if(num + extra <= 0 || num + extra >= 100) {
+        cout << "Number of Candidates Out of Range!" << endl;
+        return;
+    }
+
+    cout << "1. Enter the names of candidates for " << society << " Society!" << endl;
+
+    for(int i = num;i < num+extra;i++) {
+        string name;
+        cin >> name;
+        arr[i] = name;
+        arrVotes[i] = 0;
+        
+        if(i != (num+extra)-1) {
+            cout << "Next Candidate!" << endl;
+        }
+    }
+}
+
+void voting(string society, string arr[], int arrVotes[], int num, int& totalVotes) {
+    int vote;
+
+    cout << "=> " << society << " Society:" << endl;
+    for(int i = 0;i < num;i++) {
+        cout << i << ") " << arr[i] << endl;
+    }
+    cout << endl;
+
+    cin >> vote;            
+    if(vote < 0 || vote >= num) {
+        cout << "Invalid Vote!(Out of Range)" << endl;
+    } else {
+        for(int i = 0;i < num;i++) {
+            if(vote == i) {
+                arrVotes[i]++;
+                totalVotes++;
+            }
+        }
+    }
+}
+
+void Result(string society, string arr[], int arrVotes[], int num, int totalVotes) {
+    cout << "Result for " << society << "Society" << endl;
+
+    cout << "Name\tGained Votes\tTotal Votes\tPercentage" << endl;
+    for(int i = 0;i < num;i++) {
+        cout << i << ") " << arr[i] << ": \t" << arrVotes[i] << "\t" << totalVotes << "\t" << float((arrVotes[i]*100)/totalVotes) << endl;
+    }
+
+    cout << "\t\t****FINAL " << society << " RESULT****" << endl;
+    
+    int highestEl = arrVotes[0], max = 0;
+    for(int i = 1;i < num;i++) {
+        if(arrVotes[i] > highestEl) {
+            highestEl = arrVotes[i];
+            max = i;
+        }
+    }
+    cout << "WINNER: " << arr[max] << endl;
+}
+
 int main() {
-    int ch, IMS_num, IAS_num, Alumni_num, IMSVotes, IASVotes, AlumniVotes;
-    vector<string> IMS, IAS, Alumni;
-    vector<int> IMS_Votes, IAS_Votes, Alumni_Votes;
+    int ch;
+    string IMS[100], IAS[100], Alumni[100];
+    int IMS_Votes[100], IAS_Votes[100], Alumni_Votes[100];
+    int IMS_num, IAS_num, Alumni_num, IMSVotes, IASVotes, AlumniVotes;
 
     while(true){
-        cout << "\t\t\t*****MENU*****\n\t0) Close Program \n\t1)Prepare Voting System\n\t2)Cast Votes\n\t3)Result" << endl;
+        cout << "\t\t\t*****MENU*****\n\t0) Close Program\n\t1)Prepare Voting System\n\t2)Add More Candidaates\n\t3)Cast Votes\n\t4)Result" << endl;
         cin >> ch;
         
         if(ch == 0) {
             cout << "\t\tThankyou!" << endl;
             break;
+
         } else if(ch == 1) {
             cout << "\t\t***** Instructions for Voting System Preparation *****\n\tEnter the name and number of candidates for each society step by step!" << endl;
 
@@ -28,145 +116,70 @@ int main() {
             cin >> Alumni_num;
 
             cout << "1. Enter the names of candidates for each Society!\ni) IMS Society: " << endl;
-            for(int i = 0;i < IMS_num;i++) {
-                string name;
-                cin >> name;
-                IMS.push_back(name);
-                IMS_Votes.push_back(0);
-                
-                if(i != IMS_num-1) {
-                    cout << "Next Candidate!" << endl;
-                }
-            }
+            arrBuilder("IMS", IMS, IMS_Votes, IMS_num);
 
             cout << "ii) IAS Society: " << endl;
-            for(int i = 0;i < IAS_num;i++) {
-                string name;
-                cin >> name;
-                IAS.push_back(name);
-                IAS_Votes.push_back(0);
-                
-                if(i != IAS_num-1) {
-                    cout << "Next Candidate!" << endl;
-                }
-            }
+            arrBuilder("IAS", IAS, IAS_Votes, IAS_num);
 
             cout << "ii) Alumni Society: " << endl;
-            for(int i = 0;i < IAS_num;i++) {
-                string name;
-                cin >> name;
-                Alumni.push_back(name);
-                Alumni_Votes.push_back(0);
-                
-                if(i != Alumni_num-1) {
-                    cout << "Next Candidate!" << endl;
-                }
-            }
+            arrBuilder("Alumni", Alumni, Alumni_Votes, Alumni_num);
+
         } else if(ch == 2) {
-            cout << "\t\t***** Instructions for Vote Casting *****\n\tEnter the desired Index to which candidate you want to vote!" << endl;
-            int vote;
+            int chose;
 
-            cout << "i) IMS Society: " << endl;
-            for(int i = 0;i < IMS_num;i++) {
-                cout << i << ") " << IMS[i] << endl;
-            }
-            cout << endl;
+            cout << "Chose which Society needs more Candidates:\n\t0) Stop Adding Candidates\n\t1) IAS Society\n\t2) IMS Society\n\t3) Alumni Society" << endl;
+            cin >> chose;
 
-            cin >> vote;            
-            if(vote < 0 || vote >= IMS_num) {
-                cout << "Invalid Vote!(Out of Range)" << endl;
-            } else {
-                for(int i = 0;i < IMS_num;i++) {
-                    if(vote == i) {
-                        IMS_Votes[i]++;
-                        IMSVotes++;
-                    }
+            while (true) {
+                if(chose == 1) {
+                    int extra;
+
+                    cout << "Enter the number of candidates to be added:" << endl;
+                    cin >> extra;
+
+                    arrExtender("IMS", IMS, IMS_Votes, IMS_num, extra);
+                    IMS_num += extra;
+                } else if(chose == 2) {
+                    int extra;
+
+                    cout << "Enter the number of candidates to be added:" << endl;
+                    cin >> extra;
+
+                    arrExtender("IAS", IAS, IAS_Votes, IAS_num, extra);
+                    IAS_num += extra;
+                } else if(chose == 3) {
+                    int extra;
+
+                    cout << "Enter the number of candidates to be added:" << endl;
+                    cin >> extra;
+
+                    arrExtender("Alumni", Alumni, Alumni_Votes, Alumni_num, extra);
+                    Alumni_num += extra;
+                } else if(chose == 0) {
+                    cout << "More Candidates Added!" << endl;
+                    break;
+                } else {
+                    cout << "Invalid Choice! Try Again" << endl;
                 }
             }
 
-            cout << "ii) IAS Society: " << endl;
-            for(int i = 0;i < IAS_num;i++) {
-                cout << i << ") " << IAS[i] << endl;
-            }
-            cout << endl;
-
-            cin >> vote;            
-            if(vote < 0 || vote >= IAS_num) {
-                cout << "Invalid Vote!(Out of Range)" << endl;
-            } else {
-                for(int i = 0;i < IAS_num;i++) {
-                    if(vote == i) {
-                        IAS_Votes[i]++;
-                        IASVotes++;
-                    }
-                }
-            }
-
-            cout << "iii) Alumni Society: " << endl;
-            for(int i = 0;i < Alumni_num;i++) {
-                cout << i << ") " << Alumni[i] << endl;
-            }
-            cout << endl;
-
-            cin >> vote;            
-            if(vote < 0 || vote >= Alumni_num) {
-                cout << "Invalid Vote!(Out of Range)" << endl;
-            } else {
-                for(int i = 0;i < Alumni_num;i++) {
-                    if(vote == i) {
-                        Alumni_Votes[i]++;
-                        AlumniVotes++;
-                    }
-                }
-            }
         } else if(ch == 3) {
-            cout << "\t\t*****RESULT*****\n\ti) Result for IMS Society" << endl;
-            cout << "Name\tGained Votes\tTotal Votes\tPercentage" << endl;
-            for(int i = 0;i < IMS_num;i++) {
-                cout << i << ") " << IMS[i] << ": \t" << IMS_Votes[i] << "\t" << IMSVotes << "\t" << float((IMS_Votes[i]*100)/IMSVotes) << endl;
-            }
+            cout << "\t\t***** Instructions for Vote Casting *****\n\tEnter the desired Index to which candidate you want to vote!" << endl;
+            
+            voting("IMS", IMS, IMS_Votes, IMS_num, IMSVotes);
 
-            cout << "\t\t****FINAL IMS RESULT****" << endl;
-            int highestEl = IMS_Votes[0], max = 0;
-            for(int i = 1;i < IMS_num;i++) {
-                if(IMS_Votes[i] > highestEl) {
-                    highestEl = IMS_Votes[i];
-                    max = i;
-                }
-            }
-            cout << "WINNER: " << IMS[max] << endl;
+            voting("IAS", IAS, IAS_Votes, IAS_num, IASVotes);
 
-            cout << "\ti) Result for IAS Society" << endl;
-            cout << "Name\tGained Votes\tTotal Votes\tPercentage" << endl;
-            for(int i = 0;i < IAS_num;i++) {
-                cout << i << ") " << IAS[i] << ": \t" << IAS_Votes[i] << "\t" << IASVotes << "\t" << float((IAS_Votes[i]*100)/IASVotes) << endl;
-            }
+            voting("Alumni", Alumni, Alumni_Votes, Alumni_num, AlumniVotes);
 
-            cout << "\t\t****FINAL IAS RESULT****" << endl;
-            int highestEl = IAS_Votes[0], max = 0;
-            for(int i = 1;i < IAS_num;i++) {
-                if(IAS_Votes[i] > highestEl) {
-                    highestEl = IAS_Votes[i];
-                    max = i;
-                }
-            }
-            cout << "WINNER: " << IAS[max] << endl;
+        } else if(ch == 4) {
+            cout << "\t\t*****RESULT*****" << endl;
+            
+            Result("IMS", IMS, IMS_Votes, IMS_num, IMSVotes);
 
-            cout << "\ti) Result for Alumni Society" << endl;
-            cout << "Name\tGained Votes\tTotal Votes\tPercentage" << endl;
-            for(int i = 0;i < Alumni_num;i++) {
-                cout << i << ") " << Alumni[i] << ": \t" << Alumni_Votes[i] << "\t" << AlumniVotes << "\t" << float((Alumni_Votes[i]*100)/AlumniVotes) << endl;
-            }
+            Result("IAS", IAS, IAS_Votes, IAS_num, IASVotes);
 
-            cout << "\t\t****FINAL Alumni RESULT****" << endl;
-            int highestEl = Alumni_Votes[0], max = 0;
-            for(int i = 1;i < Alumni_num;i++) {
-                if(Alumni_Votes[i] > highestEl) {
-                    highestEl = Alumni_Votes[i];
-                    max = i;
-                }
-            }
-            cout << "WINNER: " << Alumni[max] << endl;
+            Result("Alumni", Alumni, Alumni_Votes, Alumni_num, AlumniVotes);
 
             break;
         } else {
